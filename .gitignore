@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Playwright outputs
+reports/
+playwright-report/
+test-results/
+
+# Local artifacts and screenshots at project root
+/*.png
+/*.jpg
+/*.jpeg
+
+# Local debug logs
+/*_debug.txt
+/*_test_output.txt
+/test_output.txt
+/test_latest.txt
+/ws_messages.txt
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+*.log
+
+
+

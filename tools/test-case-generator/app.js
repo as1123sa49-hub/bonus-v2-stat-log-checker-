@@ -639,11 +639,14 @@ function updateSortHeaders() {
 
 // ─── 案例數量細分 ────────────────────────────────────────────
 function updateBreakdown() {
-  const el = document.getElementById('caseBreakdown');
+  const el     = document.getElementById('caseBreakdown');
+  const legend = document.querySelector('.priority-legend');
   if (!el || currentCases.length === 0) {
-    if (el) el.textContent = '';
+    if (el)     el.textContent = '';
+    if (legend) legend.classList.remove('visible');
     return;
   }
+  if (legend) legend.classList.add('visible');
   let pos = 0, neg = 0, bnd = 0;
   currentCases.forEach(c => {
     const t = c['測試類型'] || '';
@@ -1127,6 +1130,14 @@ function checkReady() {
 document.getElementById('apiKeyInput').addEventListener('input', checkReady);
 document.getElementById('verPrefixInput').addEventListener('input', checkReady);
 
+// ─── API Key 說明展開/收合 ────────────────────────────────────
+document.getElementById('helpKeyBtn').addEventListener('click', () => {
+  const box = document.getElementById('apiHelpBox');
+  const btn = document.getElementById('helpKeyBtn');
+  const open = box.classList.toggle('visible');
+  btn.textContent = open ? '❓ 如何取得免費 Key ▴' : '❓ 如何取得免費 Key ▾';
+});
+
 setupFileZone('newFile', 'newZone', 'newFileName');
 setupFileZone('oldFile', 'oldZone', 'oldFileName');
 
@@ -1263,7 +1274,12 @@ document.querySelector('.result-table thead').addEventListener('click', e => {
   if (!th || !currentCases.length) return;
   const field = th.dataset.sortField;
   if (sortState.col === field) {
-    sortState.dir = sortState.dir === 'asc' ? 'desc' : 'asc';
+    if (sortState.dir === 'asc') {
+      sortState.dir = 'desc';
+    } else {
+      sortState.col = null;   // 第三次點擊：還原原始順序
+      sortState.dir = 'asc';
+    }
   } else {
     sortState.col = field;
     sortState.dir = 'asc';
