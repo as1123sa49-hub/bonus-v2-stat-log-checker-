@@ -93,6 +93,15 @@
         };
     }
 
+    function downloadJSON(filename, data) {
+        const pretty = JSON.stringify(data, null, 2);
+        const blob = new Blob([pretty], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+    }
+
     // =============================================
     //  CSV 匯出（白名單：只導出勾選的欄位）
     // =============================================
@@ -171,6 +180,19 @@
 
         console.log(`✅ [Log Checker] 已匯出 ${rows.length} 筆`);
         updatePanelCount();
+    };
+
+    // =============================================
+    //  JSON 匯出（原始 queue）
+    // =============================================
+    window.exportLogJSONRaw = function () {
+        const queue = window.__logQueue;
+        if (!queue.length) {
+            alert('尚未收集到任何 log');
+            return;
+        }
+        downloadJSON(`front_logs_raw_${Date.now()}.json`, queue);
+        console.log(`✅ [Log Checker] 已匯出 JSON（原始）${queue.length} 筆`);
     };
 
     // =============================================
@@ -277,6 +299,8 @@
 
         const exportBtn = panel.querySelector('#lcExportBtn');
         if (exportBtn) { exportBtn.disabled = false; exportBtn.style.opacity = '1'; }
+        const exportJsonRawBtn = panel.querySelector('#lcExportJsonRawBtn');
+        if (exportJsonRawBtn) { exportJsonRawBtn.disabled = false; exportJsonRawBtn.style.opacity = '1'; }
 
         outerKeys.forEach(key => addDynamicFieldCheckbox(key, 'outer'));
         innerKeys.forEach(key => addDynamicFieldCheckbox(key, 'inner'));
@@ -413,15 +437,21 @@
                 </div>
 
                 <!-- 按鈕區 -->
-                <div style="display:flex;gap:8px;margin-top:8px;">
+                <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
                     <button id="lcExportBtn" disabled style="
-                        flex:1;padding:7px 0;background:#1971c2;color:#fff;
+                        flex:1 1 120px;padding:7px 0;background:#1971c2;color:#fff;
                         border:none;border-radius:6px;cursor:pointer;
                         font-size:12px;font-weight:600;opacity:.5;">
                         匯出 CSV
                     </button>
+                    <button id="lcExportJsonRawBtn" disabled style="
+                        flex:1 1 120px;padding:7px 0;background:#2f9e44;color:#fff;
+                        border:none;border-radius:6px;cursor:pointer;
+                        font-size:12px;font-weight:600;opacity:.5;">
+                        匯出 JSON(原始)
+                    </button>
                     <button id="lcClearBtn" style="
-                        flex:0 0 auto;padding:7px 12px;background:#373a40;
+                        flex:1 1 120px;padding:7px 12px;background:#373a40;
                         color:#dee2e6;border:none;border-radius:6px;
                         cursor:pointer;font-size:12px;">
                         清空
@@ -446,6 +476,9 @@
         panel.querySelector('#lcExportBtn').addEventListener('click', () => {
             window.exportLogCSV();
         });
+        panel.querySelector('#lcExportJsonRawBtn').addEventListener('click', () => {
+            window.exportLogJSONRaw();
+        });
 
         // 清空按鈕
         panel.querySelector('#lcClearBtn').addEventListener('click', () => {
@@ -462,6 +495,8 @@
             if (innerFields) innerFields.innerHTML = '';
             const exportBtn = panel.querySelector('#lcExportBtn');
             if (exportBtn) { exportBtn.disabled = true; exportBtn.style.opacity = '.5'; }
+            const exportJsonRawBtn = panel.querySelector('#lcExportJsonRawBtn');
+            if (exportJsonRawBtn) { exportJsonRawBtn.disabled = true; exportJsonRawBtn.style.opacity = '.5'; }
 
             updatePanelCount();
             console.log('[Log Checker] Queue 已清空');
@@ -550,6 +585,6 @@
     //  啟動
     // =============================================
     createPanel();
-    console.log('%c✅ [Log Checker] 已啟動 — 面板在右上角，勾選「導」欄位後點「匯出 CSV」', 'color:#51cf66;font-weight:bold;');
+    console.log('%c✅ [Log Checker] 已啟動 — 面板在右上角，可匯出 CSV / JSON(原始)', 'color:#51cf66;font-weight:bold;');
 
 })();
