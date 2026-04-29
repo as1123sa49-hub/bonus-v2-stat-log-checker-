@@ -1,8 +1,8 @@
 {
-  "name": "bonus-v2-stat-log-checker",
+  "name": "qa-tools-monorepo",
   "version": "2.0.0",
   "private": true,
-  "description": "500X 機率統計與前端 LOG 攔截腳本",
+  "description": "QA 工具 monorepo：tools-hub 整合入口 + tools（500X V2、log 攔截／比對、圖比、測案產生、smoke 等）",
   "scripts": {
     "start:bonus-v2": "node tools/bonus-v2/server.js",
     "start:500x": "node tools/bonus-v2/server.js",
