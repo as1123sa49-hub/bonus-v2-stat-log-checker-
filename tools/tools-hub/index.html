@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QA Tools Hub</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>QA Tools Hub</h1>
+    <p>單一入口切換工具與操作導引</p>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <button class="nav-btn active" data-tool="img-compare">圖片比對</button>
+      <button class="nav-btn" data-tool="test-case-generator">測案產生器</button>
+      <button class="nav-btn" data-tool="500x">500X 機率統計</button>
+      <button class="nav-btn" data-tool="front-log-checker">前端 LOG 驗證</button>
+      <button class="nav-btn" data-tool="front-log-compare">LOG 結構比對</button>
+    </aside>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-head-top">
+          <h2 id="tool-title">圖片比對</h2>
+          <button id="btn-readme" class="btn-muted">看說明</button>
+          <button id="btn-reload" class="btn-muted">刷新工具</button>
+        </div>
+      </div>
+
+      <section id="guide" class="guide"></section>
+
+      <section id="embed-wrap" class="embed-wrap">
+      </section>
+    </section>
+  </main>
+
+  <div id="readme-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" id="readme-close-backdrop"></div>
+    <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="readme-title">
+      <header class="modal-head">
+        <h3 id="readme-title">工具說明</h3>
+        <button id="readme-close-btn" class="btn-muted">關閉</button>
+      </header>
+      <article id="readme-content" class="modal-content"></article>
+    </section>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

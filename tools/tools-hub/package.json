@@ -1,0 +1,13 @@
+{
+  "name": "tools-hub",
+  "version": "1.0.0",
+  "description": "Single entry frontend for tools",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^3.0.3"
+  }
+}

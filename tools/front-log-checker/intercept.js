@@ -7,6 +7,16 @@
     const TARGET_URL = '/api/log';
     const DEFAULT_CHECK_FIELDS = ['balance', 'seq_index'];
     const PANEL_ID = '__logCheckerPanel';
+    // 預設排除噪音事件（連線狀態 / 視訊事件）
+    const EXCLUDED_EVENT_KEYWORDS = [
+        'connecting',
+        'connected',
+        'disconnecting',
+        'disconnected',
+        'client.video.join',
+        'client.video.leave',
+        'video'
+    ];
 
     // =============================================
     //  狀態
@@ -16,13 +26,15 @@
 
     // =============================================
     //  工具：解析 log payload
-    //  回傳 { merged, outerKeys, innerKeys, outerData, innerJsondata, rawJsondata }
-    //  - outerData     = response.data（外層，含 jsondata 字串）
+    //  回傳 { merged, rootKeys, outerKeys, innerKeys, rootData, outerData, innerJsondata, rawJsondata }
+    //  - rootData      = response 最外層
+    //  - outerData     = response.data（data 層，含 jsondata 字串）
     //  - innerJsondata = 解析後的內層物件
     //  - rawJsondata   = outerData.jsondata 原始字串
     //  - merged        = 兩層展平（供驗證用）
     // =============================================
     function parsePayload(response) {
+        const rootData = (response && typeof response === 'object') ? response : {};
         const outerData = (response && response.data) ? response.data : (response || {});
 
         const rawJsondata = typeof outerData.jsondata === 'string'
@@ -34,15 +46,21 @@
             innerJsondata = rawJsondata ? JSON.parse(rawJsondata) : {};
         } catch (e) { /* ignore */ }
 
-        // outerKeys：外層所有欄位（含 jsondata，排除雜訊）
+        // rootKeys：response 最外層欄位（排除 data 與雜訊）
+        const ROOT_NOISE = new Set(['data', 'extra', 'abtest']);
+        const rootKeys = Object.keys(rootData).filter(k => !ROOT_NOISE.has(k));
+        // outerKeys：data 層所有欄位（含 jsondata，排除雜訊）
         const NOISE = new Set(['extra', 'abtest']);
         const outerKeys = Object.keys(outerData).filter(k => !NOISE.has(k));
         const innerKeys = Object.keys(innerJsondata);
 
-        const merged = Object.assign({}, outerData, innerJsondata);
+        const prefixedRoot = {};
+        rootKeys.forEach(k => { prefixedRoot[`root.${k}`] = rootData[k]; });
+
+        const merged = Object.assign({}, outerData, innerJsondata, prefixedRoot);
         new Set(['jsondata', 'extra', 'abtest']).forEach(k => delete merged[k]);
 
-        return { merged, outerKeys, innerKeys, outerData, innerJsondata, rawJsondata };
+        return { merged, rootKeys, outerKeys, innerKeys, rootData, outerData, innerJsondata, rawJsondata };
     }
 
     // =============================================
@@ -68,12 +86,17 @@
     // =============================================
     function getIncludeFields() {
         const panel = document.getElementById(PANEL_ID);
+        const rootInclude = new Set(
+            panel
+                ? Array.from(panel.querySelectorAll('#lcRootFields .lcIncludeCheck:checked')).map(cb => cb.value)
+                : []
+        );
         const outerInclude = new Set(
             panel
                 ? Array.from(panel.querySelectorAll('#lcOuterFields .lcIncludeCheck:checked')).map(cb => cb.value)
                 : []
         );
-        return { outerInclude };
+        return { rootInclude, outerInclude };
     }
 
     // =============================================
@@ -112,9 +135,9 @@
             return;
         }
 
-        const { outerInclude } = getIncludeFields();
-        if (outerInclude.size === 0) {
-            alert('請至少勾選一個要導出的欄位（外層「導」checkbox）');
+        const { rootInclude, outerInclude } = getIncludeFields();
+        if (rootInclude.size === 0 && outerInclude.size === 0) {
+            alert('請至少勾選一個要導出的欄位（root / data 的「導」checkbox）');
             return;
         }
 
@@ -124,8 +147,17 @@
         const allKeys = new Set();
 
         const rows = queue.map(item => {
-            const { merged, outerData, innerJsondata, rawJsondata } = parsePayload(item.payload);
+            const { merged, rootData, outerData, innerJsondata, rawJsondata } = parsePayload(item.payload);
             const row = {};
+
+            // root 層勾選的欄位（以 root. 前綴）
+            rootInclude.forEach(k => {
+                if (!k.startsWith('root.')) return;
+                const rootKey = k.slice(5);
+                if (rootData[rootKey] !== undefined) {
+                    row[k] = rootData[rootKey];
+                }
+            });
 
             // 外層勾選的欄位
             outerInclude.forEach(k => {
@@ -231,13 +263,15 @@
 
     // =============================================
     //  面板：新增動態欄位列
-    //  外層：驗證 + 導出 checkbox
+    //  root/data：驗證 + 導出 checkbox
     //  內層：驗證 checkbox 只（導出由外層 jsondata 控制）
     // =============================================
     function addDynamicFieldCheckbox(key, layer) {
         const panel = document.getElementById(PANEL_ID);
         if (!panel) return;
-        const containerId = layer === 'inner' ? 'lcInnerFields' : 'lcOuterFields';
+        const containerId = layer === 'inner'
+            ? 'lcInnerFields'
+            : (layer === 'root' ? 'lcRootFields' : 'lcOuterFields');
         const container = panel.querySelector('#' + containerId);
         if (!container) return;
 
@@ -253,12 +287,12 @@
         cbValidate.className = 'lcDynCheck';
         cbValidate.title = '加入驗證';
         cbValidate.style.cssText = 'cursor:pointer;flex-shrink:0;accent-color:' +
-            (layer === 'inner' ? '#f59f00' : '#339af0') + ';';
+            (layer === 'inner' ? '#f59f00' : (layer === 'root' ? '#b197fc' : '#339af0')) + ';';
 
         rowEl.appendChild(cbValidate);
 
         // 外層才有導出 checkbox（綠）
-        if (layer === 'outer') {
+        if (layer === 'outer' || layer === 'root') {
             const cbInclude = document.createElement('input');
             cbInclude.type = 'checkbox';
             cbInclude.value = key;
@@ -287,7 +321,7 @@
     // =============================================
     //  面板：第一筆 log 進來後，更新 UI
     // =============================================
-    function onFirstLog({ outerKeys, innerKeys }) {
+    function onFirstLog({ rootKeys, outerKeys, innerKeys }) {
         const panel = document.getElementById(PANEL_ID);
         if (!panel) return;
 
@@ -302,6 +336,7 @@
         const exportJsonRawBtn = panel.querySelector('#lcExportJsonRawBtn');
         if (exportJsonRawBtn) { exportJsonRawBtn.disabled = false; exportJsonRawBtn.style.opacity = '1'; }
 
+        rootKeys.forEach(key => addDynamicFieldCheckbox(`root.${key}`, 'root'));
         outerKeys.forEach(key => addDynamicFieldCheckbox(key, 'outer'));
         innerKeys.forEach(key => addDynamicFieldCheckbox(key, 'inner'));
     }
@@ -309,7 +344,8 @@
     // =============================================
     //  面板：後續 log 補充新發現的欄位
     // =============================================
-    function updateDynamicFields({ outerKeys, innerKeys }) {
+    function updateDynamicFields({ rootKeys, outerKeys, innerKeys }) {
+        rootKeys.forEach(key => addDynamicFieldCheckbox(`root.${key}`, 'root'));
         outerKeys.forEach(key => addDynamicFieldCheckbox(key, 'outer'));
         innerKeys.forEach(key => addDynamicFieldCheckbox(key, 'inner'));
     }
@@ -394,7 +430,7 @@
                     ⏳ 等待第一筆 log...
                 </div>
 
-                <!-- 動態欄位區（第一筆進來才顯示，分兩層） -->
+                <!-- 動態欄位區（第一筆進來才顯示，分三層） -->
                 <div id="lcDynSection" style="display:none;margin-bottom:10px;">
 
                     <!-- 欄頭說明 -->
@@ -406,13 +442,29 @@
                         <span>欄位名稱</span>
                     </div>
 
+                    <!-- 回應最外層 root -->
+                    <div style="
+                        display:flex;align-items:center;justify-content:space-between;
+                        margin-bottom:4px;">
+                        <div style="display:flex;align-items:center;gap:6px;
+                            font-size:11px;color:#d0bfff;font-weight:600;">
+                            <span>▌</span><span>回應最外層欄位（root）</span>
+                        </div>
+                        <div style="display:flex;gap:4px;">
+                            <button id="lcRootSelectAll" style="${selectBtnStyle}">全選</button>
+                            <button id="lcRootSelectNone" style="${selectBtnStyle}">全不選</button>
+                        </div>
+                    </div>
+                    <div id="lcRootFields" style="${fieldBoxStyle};margin-bottom:8px;">
+                    </div>
+
                     <!-- 外層 data -->
                     <div style="
                         display:flex;align-items:center;justify-content:space-between;
                         margin-bottom:4px;">
                         <div style="display:flex;align-items:center;gap:6px;
                             font-size:11px;color:#74c0fc;font-weight:600;">
-                            <span>▌</span><span>data 外層欄位</span>
+                            <span>▌</span><span>data 欄位</span>
                         </div>
                         <div style="display:flex;gap:4px;">
                             <button id="lcOuterSelectAll" style="${selectBtnStyle}">全選</button>
@@ -428,7 +480,7 @@
                         margin-bottom:4px;">
                         <div style="display:flex;align-items:center;gap:6px;
                             font-size:11px;color:#ffd43b;font-weight:600;">
-                            <span>▌</span><span>jsondata 內層欄位（僅驗證）</span>
+                            <span>▌</span><span>jsondata 欄位（data.jsondata，僅驗證）</span>
                         </div>
                     </div>
                     <div id="lcInnerFields" style="${fieldBoxStyle};">
@@ -491,6 +543,8 @@
             if (waiting) waiting.style.display = 'block';
             const outerFields = panel.querySelector('#lcOuterFields');
             if (outerFields) outerFields.innerHTML = '';
+            const rootFields = panel.querySelector('#lcRootFields');
+            if (rootFields) rootFields.innerHTML = '';
             const innerFields = panel.querySelector('#lcInnerFields');
             if (innerFields) innerFields.innerHTML = '';
             const exportBtn = panel.querySelector('#lcExportBtn');
@@ -502,7 +556,9 @@
             console.log('[Log Checker] Queue 已清空');
         });
 
-        // 外層全選 / 全不選 按鈕（只作用在外層導出 checkbox）
+        // root/data 全選 / 全不選 按鈕（只作用在導出 checkbox）
+        panel.querySelector('#lcRootSelectAll').addEventListener('click', () => setAllInclude('lcRootFields', true));
+        panel.querySelector('#lcRootSelectNone').addEventListener('click', () => setAllInclude('lcRootFields', false));
         panel.querySelector('#lcOuterSelectAll').addEventListener('click', () => setAllInclude('lcOuterFields', true));
         panel.querySelector('#lcOuterSelectNone').addEventListener('click', () => setAllInclude('lcOuterFields', false));
 
@@ -549,9 +605,9 @@
                     try {
                         const response = JSON.parse(this.responseText);
 
-                        // 過濾 video 事件
+                        // 過濾噪音事件（連線狀態 / 視訊事件）
                         const eventType = (response.event || '').toLowerCase();
-                        if (eventType.includes('video')) return;
+                        if (EXCLUDED_EVENT_KEYWORDS.some(k => eventType.includes(k))) return;
 
                         if (response) {
                             window.__logQueue.push({

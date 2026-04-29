@@ -4,7 +4,19 @@
   "private": true,
   "description": "500X 機率統計與前端 LOG 攔截腳本",
   "scripts": {
-    "start:500x": "node tools/500x/server.js"
+    "start:500x": "node tools/500x/server.js",
+    "test": "npx playwright test",
+    "test:it": "npx playwright test tests/integration",
+    "test:reg": "npx playwright test tests/regression",
+    "test:ui-smoke": "node tools/ui-smoke-automation/run-smoke.js",
+    "report": "npx playwright show-report reports/playwright",
+    "clean": "powershell -ExecutionPolicy Bypass -File .\\clean.ps1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.56.0"
   },
   "dependencies": {
     "express": "^4.21.0",

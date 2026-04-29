@@ -1,0 +1,358 @@
+{
+  "suite_id": "colorgame_smoke_lobby_room_v1",
+  "env": {
+    "base_url": "",
+    "viewport": {
+      "width": 430,
+      "height": 932
+    },
+    "cocos_design_resolution": {
+      "width": 864,
+      "height": 1536
+    },
+    "is_mobile": true,
+    "use_touch": true,
+    "headless": false,
+    "log_url_keyword": "/api/log",
+    "log_timeout_ms": 10000,
+    "case_settle_ms": 1500,
+    "reload_each_case": true,
+    "ready_log": {
+      "expect": {
+        "event_name": "LoadingPage",
+        "function_name": "LoadingComplete",
+        "page_name": "LoadingPage"
+      },
+      "timeout_ms": 20000,
+      "settle_ms": 1500
+    }
+  },
+  "cases": [
+    {
+      "case_id": "C01_room_exit_to_lobby",
+      "title": "返回大廳_從房內點返回",
+      "actions": [
+        {
+          "type": "click_ratio",
+          "coordinate_space": "viewport",
+          "target": "lobby_play_button",
+          "component": {
+            "name": "EnterRoomSensor",
+            "world_position": {
+              "x": 432,
+              "y": 1072.95
+            },
+            "size": {
+              "width": 814,
+              "height": 334
+            },
+            "point_offsets_px": [
+              { "dx": 0, "dy": 0 },
+              { "dx": -120, "dy": 0 },
+              { "dx": 120, "dy": 0 },
+              { "dx": 0, "dy": -60 },
+              { "dx": 0, "dy": 60 }
+            ]
+          },
+          "scan_grid": {
+            "enabled": false,
+            "x_min": 0.44,
+            "x_max": 0.56,
+            "y_min": 0.25,
+            "y_max": 0.36,
+            "x_steps": 5,
+            "y_steps": 4,
+            "per_point_timeout_ms": 1300
+          },
+          "points": [
+            {
+              "x": 0.5,
+              "y": 0.301
+            },
+            {
+              "x": 0.48,
+              "y": 0.301
+            },
+            {
+              "x": 0.52,
+              "y": 0.301
+            }
+          ],
+          "expect_log": {
+            "event_name": "Lobby",
+            "function_name": "GameTable",
+            "page_name": "Lobby",
+            "game_id": "31"
+          },
+          "log_timeout_ms": 12000
+        },
+        {
+          "type": "click_ratio",
+          "coordinate_space": "viewport",
+          "target": "room_back_button_top_left",
+          "component": {
+            "name": "RoomBackButton(estimated)",
+            "world_position": {
+              "x": 52,
+              "y": 1476
+            },
+            "size": {
+              "width": 80,
+              "height": 80
+            },
+            "point_offsets_px": [
+              { "dx": 0, "dy": 0 },
+              { "dx": -12, "dy": 0 },
+              { "dx": 12, "dy": 0 },
+              { "dx": 0, "dy": -12 },
+              { "dx": 0, "dy": 12 }
+            ]
+          },
+          "scan_grid": {
+            "enabled": false,
+            "x_min": 0.03,
+            "x_max": 0.12,
+            "y_min": 0.02,
+            "y_max": 0.08,
+            "x_steps": 5,
+            "y_steps": 4,
+            "per_point_timeout_ms": 1200
+          },
+          "points": [
+            {
+              "x": 0.06,
+              "y": 0.0381
+            },
+            {
+              "x": 0.045,
+              "y": 0.04
+            },
+            {
+              "x": 0.08,
+              "y": 0.04
+            }
+          ],
+          "expect_log": {
+            "event_name": "GameRoom",
+            "function_name": "RoomExit",
+            "page_name": "GameRoom",
+            "game_id": "31"
+          },
+          "log_timeout_ms": 12000
+        }
+      ],
+      "assertions": {
+        "log": {
+          "expect": {
+            "event_name": "GameRoom",
+            "function_name": "RoomExit",
+            "page_name": "GameRoom",
+            "game_id": "31"
+          },
+          "jsondata_required_keys": [
+            "balance",
+            "table",
+            "round_number"
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "C02_lobby_setting_open",
+      "title": "大廳菜單_點齒輪展開",
+      "action": {
+        "type": "click_ratio",
+        "coordinate_space": "viewport",
+        "target": "lobby_gear_top_right",
+        "component": {
+          "name": "NavigationButton",
+          "world_position": {
+            "x": 799,
+            "y": 1486
+          },
+          "size": {
+            "width": 51,
+            "height": 57
+          },
+          "point_offsets_px": [
+            { "dx": 0, "dy": 0 },
+            { "dx": -8, "dy": 0 },
+            { "dx": 8, "dy": 0 },
+            { "dx": 0, "dy": -8 },
+            { "dx": 0, "dy": 8 }
+          ]
+        },
+        "expect_log": {
+          "event_name": "Lobby",
+          "function_name": "Setting",
+          "page_name": "Lobby",
+          "game_id": "31"
+        },
+        "log_timeout_ms": 12000,
+        "scan_grid": {
+          "enabled": false,
+          "x_min": 0.9,
+          "x_max": 0.96,
+          "y_min": 0.015,
+          "y_max": 0.06,
+          "x_steps": 6,
+          "y_steps": 4,
+          "per_point_timeout_ms": 1200
+        },
+        "points": [
+          {
+            "x": 0.64,
+            "y": 0.0262
+          },
+          {
+            "x": 0.625,
+            "y": 0.029
+          },
+          {
+            "x": 0.655,
+            "y": 0.029
+          }
+        ]
+      },
+      "assertions": {
+        "log": {
+          "expect": {
+            "event_name": "Lobby",
+            "function_name": "Setting",
+            "page_name": "Lobby",
+            "game_id": "31"
+          },
+          "jsondata_expect": {
+            "switch": "open"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "C03_room_setting_open",
+      "title": "房內菜單_點右下三點展開",
+      "actions": [
+        {
+          "type": "click_ratio",
+          "coordinate_space": "viewport",
+          "target": "lobby_play_button",
+          "component": {
+            "name": "EnterRoomSensor",
+            "world_position": {
+              "x": 432,
+              "y": 1072.95
+            },
+            "size": {
+              "width": 814,
+              "height": 334
+            },
+            "point_offsets_px": [
+              { "dx": 0, "dy": 0 },
+              { "dx": -120, "dy": 0 },
+              { "dx": 120, "dy": 0 },
+              { "dx": 0, "dy": -60 },
+              { "dx": 0, "dy": 60 }
+            ]
+          },
+          "scan_grid": {
+            "enabled": false,
+            "x_min": 0.44,
+            "x_max": 0.56,
+            "y_min": 0.25,
+            "y_max": 0.36,
+            "x_steps": 5,
+            "y_steps": 4,
+            "per_point_timeout_ms": 1300
+          },
+          "points": [
+            {
+              "x": 0.5,
+              "y": 0.301
+            },
+            {
+              "x": 0.48,
+              "y": 0.301
+            },
+            {
+              "x": 0.52,
+              "y": 0.301
+            }
+          ],
+          "expect_log": {
+            "event_name": "Lobby",
+            "function_name": "GameTable",
+            "page_name": "Lobby",
+            "game_id": "31"
+          },
+          "log_timeout_ms": 12000
+        },
+        {
+          "type": "click_ratio",
+          "coordinate_space": "viewport",
+          "target": "room_more_bottom_right",
+          "component": {
+            "name": "ButtonMenu",
+            "world_position": {
+              "x": 810.55,
+              "y": 93.5
+            },
+            "size": {
+              "width": 69,
+              "height": 69
+            },
+            "point_offsets_px": [
+              { "dx": 0, "dy": 0 },
+              { "dx": -10, "dy": 0 },
+              { "dx": 10, "dy": 0 },
+              { "dx": 0, "dy": -10 },
+              { "dx": 0, "dy": 10 }
+            ]
+          },
+          "points": [
+            {
+              "x": 0.938,
+              "y": 0.939
+            },
+            {
+              "x": 0.926,
+              "y": 0.939
+            },
+            {
+              "x": 0.95,
+              "y": 0.939
+            },
+            {
+              "x": 0.938,
+              "y": 0.928
+            },
+            {
+              "x": 0.938,
+              "y": 0.95
+            }
+          ],
+          "expect_log": {
+            "event_name": "GameRoom",
+            "function_name": "MoreGame",
+            "page_name": "GameRoom",
+            "game_id": "31"
+          },
+          "log_timeout_ms": 12000
+        }
+      ],
+      "assertions": {
+        "log": {
+          "expect": {
+            "event_name": "GameRoom",
+            "function_name": "MoreGame",
+            "page_name": "GameRoom",
+            "game_id": "31"
+          },
+          "jsondata_required_keys": [
+            "table",
+            "round_number"
+          ]
+        }
+      }
+    }
+  ]
+}
