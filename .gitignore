@@ -6,6 +6,9 @@ reports/
 playwright-report/
 test-results/
 
+# UI smoke run artifacts
+tools/ui-smoke-automation/screenshots/
+
 # Local artifacts and screenshots at project root
 /*.png
 /*.jpg

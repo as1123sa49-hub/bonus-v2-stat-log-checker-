@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// 讀取 detail CSV（從 tools/500x/ 目錄，需要回到根目錄）
+// 讀取 detail CSV（從 tools/bonus-v2/ 目錄，需要回到根目錄）
 const detailPath = path.join(__dirname, '..', '..', 'reports', 'detail239.csv');
 const detailContent = fs.readFileSync(detailPath, 'utf8');
 const detailLines = detailContent.split('\n').filter(l => l.trim());

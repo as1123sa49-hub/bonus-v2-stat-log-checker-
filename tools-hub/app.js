@@ -22,17 +22,17 @@ const TOOL_MAP = {
       '確認結果後匯出 XLSX，交付 QA / 開發使用。'
     ]
   },
-  '500x': {
-    title: '500X 機率統計',
-    url: '/apps/500x/',
+  'bonus-v2': {
+    title: '500X 機率統計（Bonus V2）',
+    url: '/apps/bonus-v2/',
     embeddable: true,
     steps: [
       '確認 500X 服務已啟動（預設 http://localhost:3001）。',
       '輸入遊戲網址與局數，點擊開始收集。',
       '等待 WebSocket 統計更新與局數達標。',
-      '在 500X 頁面匯出統計 CSV / 明細 CSV。'
+      '在 Bonus V2 頁面匯出統計 CSV / 明細 CSV。'
     ],
-    command: 'cd tools/500x && node verify-rates.js'
+    command: 'cd tools/bonus-v2 && node verify-rates.js'
   },
   'front-log-checker': {
     title: '前端 LOG 驗證',

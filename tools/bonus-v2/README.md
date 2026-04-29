@@ -5,7 +5,7 @@
 ## 啟動方式
 
 ```bash
-node tools/500x/server.js
+node tools/bonus-v2/server.js
 ```
 
 瀏覽器開啟：http://localhost:3001
@@ -110,7 +110,7 @@ Single 2同, 3x, 64, 32.00%, 13, 34.21%, +2.21%, 正常
 ## 目錄結構
 
 ```
-tools/500x/
+tools/bonus-v2/
   server.js              ← Express + Playwright 後端
   public/
     index.html           ← 前端頁面

@@ -1,0 +1,13 @@
+{
+  "name": "img-compare",
+  "version": "1.0.0",
+  "description": "圖片資源比對工具 — 比對兩個環境的圖片差異",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "playwright": "^1.44.0"
+  }
+}

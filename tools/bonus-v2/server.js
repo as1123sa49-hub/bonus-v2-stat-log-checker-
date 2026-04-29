@@ -2,7 +2,7 @@
  * Bonus ColorGame V2 — 電子骰機率驗證工具
  * Express 伺服器 + Playwright WebSocket 攔截
  *
- * 啟動方式：node tools/500x/server.js
+ * 啟動方式：node tools/bonus-v2/server.js
  * 瀏覽器開啟：http://localhost:3001
  */
 

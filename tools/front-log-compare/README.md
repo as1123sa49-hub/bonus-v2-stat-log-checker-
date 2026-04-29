@@ -1,6 +1,6 @@
 # LOG 結構比對（front-log-compare）
 
-此工具支援兩種模式，並可獨立啟動（不依賴 `tools-hub`）：
+此工具支援兩種模式，並可獨立啟動（不依賴倉庫根目錄的 `tools-hub`）：
 
 - 雙檔比對：比對兩份 `front-log-checker` 匯出的 `JSON(原始)` 檔案
 - 單檔驗證：上傳 1 份 `JSON(原始)`，檢查指定欄位缺失

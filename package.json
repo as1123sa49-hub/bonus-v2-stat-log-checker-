@@ -4,7 +4,8 @@
   "private": true,
   "description": "500X 機率統計與前端 LOG 攔截腳本",
   "scripts": {
-    "start:500x": "node tools/500x/server.js",
+    "start:bonus-v2": "node tools/bonus-v2/server.js",
+    "start:500x": "node tools/bonus-v2/server.js",
     "test": "npx playwright test",
     "test:it": "npx playwright test tests/integration",
     "test:reg": "npx playwright test tests/regression",

@@ -79,6 +79,6 @@ node tools/ui-smoke-automation/run-smoke.js
 
 ## 相關工具（建議搭配）
 
-- 執行 UI smoke 後，若需要做前端 log 的欄位檢查或結構比對，可到 `tools-hub` 使用 `LOG 結構比對（front-log-compare）`：
+- 執行 UI smoke 後，若需要做前端 log 的欄位檢查或結構比對，可到倉庫根目錄的 **`tools-hub`**（預設 <http://localhost:3010>）使用 `LOG 結構比對（front-log-compare）`：
   - 雙檔比對：上傳舊版 + 新版 JSON（原始）
   - 單檔驗證：上傳 1 份 JSON 驗證欄位缺失（支援 `root.` / `data`）

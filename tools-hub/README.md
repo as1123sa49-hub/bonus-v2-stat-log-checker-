@@ -1,12 +1,12 @@
 # QA Tools Hub
 
-將 `tools` 下不同工具整合成單一入口頁，透過分頁切換工具並提供操作導引。
+將 `tools/` 下不同工具整合成單一入口頁（本目錄位於**倉庫根目錄**，與 `tools/` 同層），透過分頁切換工具並提供操作導引。
 
 ## 目前整合內容
 
 - 圖片比對（`img-compare`）：可 iframe 內嵌（支援 A/B 比對與單站檢視）
 - 測案產生器（`test-case-generator`）：可 iframe 內嵌（支援新舊規格比對、匯入Case比對新版）
-- 500X 機率統計（`500x`）：可 iframe 內嵌（Hub 代理至 500x 服務）
+- 500X 機率統計（`bonus-v2`，目錄 `tools/bonus-v2/`）：可 iframe 內嵌（Hub 代理至 Bonus V2 服務）
 - 前端 LOG 驗證（`front-log-checker`）：提供 Console 一鍵複製完整腳本
 - LOG 結構比對（`front-log-compare`）：
   - 雙檔比對：上傳舊版 + 新版 JSON（原始），比對 `jsondata` 結構與 `data/root` 欄位
@@ -14,28 +14,30 @@
 
 ## 啟動方式（單一入口）
 
+在**倉庫根目錄**下：
+
 ```bash
-cd tools/tools-hub
+cd tools-hub
 npm install
 npm start
 ```
 
 開啟：`http://localhost:3010`
 
-> `img-compare` 與 `500x` 仍需先啟動其原始服務：
+> `img-compare` 與 `bonus-v2`（500X 服務）仍需先啟動其原始服務：
 > - `img-compare`：預設 `http://localhost:3000`
-> - `500x`：預設 `http://localhost:3001`
+> - `bonus-v2`：預設 `http://localhost:3001`
 >
 > Hub 會透過路由掛到：
 > - `/apps/img-compare`
-> - `/apps/500x`
+> - `/apps/bonus-v2`
 > - `/apps/front-log-compare`
-> - 對應 API 路由（500x 的 `/api/start|stop|events`）
+> - 對應 API 代理：`/api/bonus-v2/*` → 3001 的 `/api/*`
 >
 > 可用環境變數覆蓋：
 > - `PORT`：Hub 入口埠號（預設 `3010`）
 > - `IMG_COMPARE_URL`：img-compare 目標位址（預設 `http://127.0.0.1:3000`）
-> - `BONUS_500X_URL`：500x 目標位址（預設 `http://127.0.0.1:3001`）
+> - `BONUS_500X_URL`：bonus-v2 目標位址（預設 `http://127.0.0.1:3001`）
 
 ## 設計原則
 

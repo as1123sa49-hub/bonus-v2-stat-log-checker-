@@ -29,7 +29,7 @@ const weights = {
 // 計算總權重
 const totalWeight = 200; // 99+66+15+12+8+8 = 200
 
-// 讀取 summary CSV（從 tools/500x/ 目錄，需要回到根目錄）
+// 讀取 summary CSV（從 tools/bonus-v2/ 目錄，需要回到根目錄）
 const summaryPath = path.join(__dirname, '..', '..', 'reports', 'dice-500x-CG500X-summary.csv');
 const summaryContent = fs.readFileSync(summaryPath, 'utf8');
 const summaryLines = summaryContent.split('\n').filter(l => l.trim());
